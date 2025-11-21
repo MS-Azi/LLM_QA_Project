@@ -6,7 +6,8 @@ import re
 app = Flask(__name__)
 
 # Configure Gemini
-genai.configure(api_key="YOUR_GEMINI_API_KEY")
+import os
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def preprocess(text):
     text = text.lower()
@@ -41,3 +42,4 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
