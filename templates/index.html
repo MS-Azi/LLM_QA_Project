@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Q&A System</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="page-bg"></div>
+<div class="gradient-overlay"></div>
+
+<div class="glass-card">
+
+    <h1 class="title">
+        CSC415 / CSC331<br>
+        <span>AI Question-and-Answering System</span>
+    </h1>
+
+    <form method="POST" class="form-box">
+        <textarea name="question" placeholder="Ask me anything..." required>{{ question if question else '' }}</textarea>
+        <button type="submit">Generate Answer</button>
+    </form>
+
+    {% if processed %}
+    <div class="result-box">
+        <div class="section">
+            <h2>Processed Question</h2>
+            <p class="fade-in">{{ processed }}</p>
+        </div>
+
+        <div class="section">
+            <h2>LLM Answer</h2>
+            <p class="fade-in">{{ answer }}</p>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
