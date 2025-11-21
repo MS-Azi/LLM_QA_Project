@@ -2,8 +2,8 @@
 import re
 import google.generativeai as genai
 
-
-genai.configure(api_key="YOUR_API_KEY_HERE")
+import os
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 def preprocess(text):
     text = text.lower()
@@ -31,3 +31,4 @@ while True:
     answer = ask_llm(final_prompt)
 
     print(f"\nGemini Answer: {answer}\n")
+
