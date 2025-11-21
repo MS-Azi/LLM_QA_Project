@@ -12,7 +12,7 @@ def preprocess(text):
     return " ".join(tokens)
 
 def ask_llm(prompt):
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("models/gemini-1.5-flash")
     response = model.generate_content(prompt)
     return response.text
 
@@ -31,4 +31,5 @@ while True:
     answer = ask_llm(final_prompt)
 
     print(f"\nGemini Answer: {answer}\n")
+
 
