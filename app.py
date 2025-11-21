@@ -16,7 +16,7 @@ def preprocess(text):
     return " ".join(tokens)
 
 def call_llm(prompt):
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("models/gemini-1.5-flash")
     response = model.generate_content(prompt)
     return response.text
 
@@ -42,4 +42,5 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
