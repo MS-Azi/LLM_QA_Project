@@ -1,3 +1,3 @@
-Flask
-google-generativeai
+flask
+google-generativeai>=0.5.3
 gunicorn
