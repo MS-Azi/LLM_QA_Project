@@ -3,26 +3,41 @@ from flask import Flask, render_template, request
 import google.generativeai as genai
 import re
 import os
-import sys # New import for printing errors
+import sys
 
 app = Flask(__name__)
 
-# --- DIAGNOSTIC PRINT ---
-# This will print to your Render logs immediately when the app starts
+# --- CONFIGURATION ---
 api_key = os.getenv("GEMINI_API_KEY")
-
 if not api_key:
     print("❌ CRITICAL ERROR: GEMINI_API_KEY is MISSING.", file=sys.stderr)
 else:
-    # We print the length to verify it's loaded, but hide the actual key for safety
-    print(f"✅ SUCCESS: GEMINI_API_KEY found! Length: {len(api_key)} characters.", file=sys.stderr)
-    
-    # Check for accidental quotes (Common mistake)
-    if api_key.startswith('"') or api_key.startswith("'"):
-        print("⚠️ WARNING: Your API key starts with a quote mark. Please remove quotes in Render Environment variables.", file=sys.stderr)
-
     genai.configure(api_key=api_key)
-# ------------------------
+
+# --- AUTO-DETECT MODEL FUNCTION ---
+def get_working_model():
+    """
+    Asks Google which models are available and picks the first one 
+    that supports text generation.
+    """
+    try:
+        print("🔍 Checking available models...", file=sys.stderr)
+        for m in genai.list_models():
+            # We look for models that support 'generateContent'
+            if 'generateContent' in m.supported_generation_methods:
+                print(f"✅ Found valid model: {m.name}", file=sys.stderr)
+                # Return the model name (clean it up just in case)
+                return m.name
+    except Exception as e:
+        print(f"⚠️ Error listing models: {e}", file=sys.stderr)
+    
+    # Fallback if auto-detection fails
+    return "gemini-1.5-flash"
+
+# Global variable to store the best model name
+CURRENT_MODEL_NAME = get_working_model()
+print(f"🚀 APP STARTED using model: {CURRENT_MODEL_NAME}", file=sys.stderr)
+# ----------------------------------
 
 def preprocess(text):
     text = text.lower()
@@ -32,12 +47,12 @@ def preprocess(text):
 
 def call_llm(prompt):
     try:
-        model = genai.GenerativeModel("gemini-pro")
+        # Use the auto-detected model name
+        model = genai.GenerativeModel(CURRENT_MODEL_NAME)
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
-        # This prints the specific Google error to your Render logs
-        print(f"❌ GEMINI API ERROR: {e}", file=sys.stderr)
+        print(f"❌ GENERATION ERROR with {CURRENT_MODEL_NAME}: {e}", file=sys.stderr)
         return "Error calling AI. Please check server logs."
 
 @app.route("/", methods=["GET", "POST"])
@@ -62,4 +77,3 @@ def index():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
